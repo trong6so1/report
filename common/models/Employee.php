@@ -2,9 +2,9 @@
 
 namespace common\models;
 
-use common\models\base\baseEmployee;
+use common\models\base\BaseEmployee;
 
-class Employee extends baseEmployee
+class Employee extends BaseEmployee
 {
 
 }

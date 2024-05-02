@@ -4,14 +4,14 @@ namespace api\modules\v1\report\controllers;
 
 use api\helper\response\ApiConstant;
 use api\helper\response\ResultHelper;
-use api\modules\v1\report\models\search\searchStaffIncome;
+use api\modules\v1\report\models\search\StaffIncomeSearch;
 use Yii;
 
 class StaffIncomeController extends Controller
 {
     public function actionIndex(): array
     {
-        $data = searchStaffIncome::search(Yii::$app->request->queryParams);
+        $data = StaffIncomeSearch::search(Yii::$app->request->queryParams);
         $statusCode = ApiConstant::SC_OK;
         $data = [
             'data' => $data,

@@ -2,14 +2,14 @@
 
 namespace common\models;
 
-use common\models\base\baseStaffIncome;
+use common\models\base\BaseStaffIncome;
 use yii\db\ActiveQuery;
 
 /**
  *
  * @property-read ActiveQuery $staff
  */
-class StaffIncome extends baseStaffIncome
+class StaffIncome extends BaseStaffIncome
 {
     public function getStaff(): ActiveQuery
     {

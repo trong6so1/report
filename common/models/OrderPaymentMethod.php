@@ -2,9 +2,9 @@
 
 namespace common\models;
 
-use common\models\base\baseOrderPaymentMethod;
+use common\models\base\BaseOrderPaymentMethod;
 
-class OrderPaymentMethod extends baseOrderPaymentMethod
+class OrderPaymentMethod extends BaseOrderPaymentMethod
 {
     const TYPE_CREDIT_CARD = 1;
     const TYPE_CASH = 2;

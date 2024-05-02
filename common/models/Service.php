@@ -2,9 +2,9 @@
 
 namespace common\models;
 
-use common\models\base\baseService;
+use common\models\base\BaseService;
 
-class Service extends baseService
+class Service extends BaseService
 {
 
 }

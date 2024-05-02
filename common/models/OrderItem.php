@@ -2,14 +2,14 @@
 
 namespace common\models;
 
-use common\models\base\baseOrderItem;
+use common\models\base\BaseOrderItem;
 use yii\db\ActiveQuery;
 
 /**
  *
  * @property-read ActiveQuery $service
  */
-class OrderItem extends baseOrderItem
+class OrderItem extends BaseOrderItem
 {
     const TYPE_SERVICE = 1;
     const STATUS_ACTIVE = 1;

@@ -2,9 +2,9 @@
 
 namespace common\models;
 
-use common\models\base\baseOrder;
+use common\models\base\BaseOrder;
 
-class Order extends baseOrder
+class Order extends BaseOrder
 {
     const POS_STATUS_PENDING = 11;
     const POS_STATUS_PROCESSING = 12;

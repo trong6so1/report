@@ -2,20 +2,20 @@
 
 namespace api\modules\v1\report\models\search;
 
-use api\modules\v1\report\models\OrderPaymentMethod;
+use api\modules\v1\report\models\StaffIncome;
 use yii\data\ActiveDataProvider;
 use yii\data\Sort;
 
-class searchOrderPaymentMethod
+class StaffIncomeSearch
 {
     public static function search($request = null): ActiveDataProvider
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => OrderPaymentMethod::report()->asArray(),
+            'query' => StaffIncome::report()->asArray(),
             'pagination' => [
                 'pageSize' => $request['perPage'] ?? 10,
             ],
-            'key' => 'payment_method_type'
+            'key' => 'staff_id'
         ]);
 
         $today = date('Y-m-d');
@@ -24,16 +24,9 @@ class searchOrderPaymentMethod
         $dataProvider->query->andFilterWhere(['between', 'created_at', $startTime, $endTime]);
 
         $sort = new Sort([
-            'attributes' => [$request['sort'] ?? 'payment_method_type'],
+            'attributes' => [$request['sort'] ?? 'payment_method_type']
         ]);
         $dataProvider->query->orderBy($sort->orders);
-        $paymentMethodTypeTitles = OrderPaymentMethod::getPaymentMethodTypeTitles();
-
-        $dataProvider->setModels(array_map(function ($model) use ($paymentMethodTypeTitles) {
-            $model['payment_method'] = $paymentMethodTypeTitles[$model['payment_method_type']];
-            return $model;
-        }, $dataProvider->getModels()));
-
         return $dataProvider;
     }
 }

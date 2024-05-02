@@ -2,20 +2,20 @@
 
 namespace api\modules\v1\report\models\search;
 
-use api\modules\v1\report\models\OrderItem;
+use api\modules\v1\report\models\OrderPaymentMethod;
 use yii\data\ActiveDataProvider;
 use yii\data\Sort;
 
-class searchOrderItem
+class OrderPaymentMethodSearch
 {
     public static function search($request = null): ActiveDataProvider
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => OrderItem::report()->asArray(),
+            'query' => OrderPaymentMethod::report()->asArray(),
             'pagination' => [
                 'pageSize' => $request['perPage'] ?? 10,
             ],
-            'key' => 'item_id'
+            'key' => 'payment_method_type'
         ]);
 
         $today = date('Y-m-d');
@@ -24,9 +24,16 @@ class searchOrderItem
         $dataProvider->query->andFilterWhere(['between', 'created_at', $startTime, $endTime]);
 
         $sort = new Sort([
-            'attributes' => [$request['sort'] ?? 'payment_method_type']
+            'attributes' => [$request['sort'] ?? 'payment_method_type'],
         ]);
         $dataProvider->query->orderBy($sort->orders);
+        $paymentMethodTypeTitles = OrderPaymentMethod::getPaymentMethodTypeTitles();
+
+        $dataProvider->setModels(array_map(function ($model) use ($paymentMethodTypeTitles) {
+            $model['payment_method'] = $paymentMethodTypeTitles[$model['payment_method_type']];
+            return $model;
+        }, $dataProvider->getModels()));
+
         return $dataProvider;
     }
 }
