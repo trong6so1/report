@@ -3,11 +3,12 @@
 namespace api\modules\v1\report\models;
 
 use common\models\Order as OrderAlias;
-use yii\data\Sort;
+use yii\db\ActiveQuery;
 
 class Order extends OrderAlias
 {
-    public static function titleViewOrderStatusReport(): array
+
+    public static function getOrderStatusTitles(): array
     {
         return [
             OrderAlias::POS_STATUS_PENDING => 'POS STATUS PENDING',
@@ -23,7 +24,7 @@ class Order extends OrderAlias
         ];
     }
 
-    public static function queryOrderStatusReport(): array
+    public static function getOrderStatuses(): array
     {
         return [
             OrderAlias::POS_STATUS_PENDING,
@@ -39,37 +40,22 @@ class Order extends OrderAlias
         ];
     }
 
-    public static function report($request = null): array
+    public static function report(): ActiveQuery
     {
-        $today = date('Y-m-d');
-        $startTime = $request['startTime'] ?? date('Y-m-d', strtotime('-1 month', strtotime($today)));
-        $endTime = $request['endTime'] ?? $today;
-        $query = parent::find()
+        return parent::find()
             ->select([
                 'order_status',
-                'COUNT(*) as quantity',
+                'COUNT(*) AS quantity',
                 'SUM(total_after_discount) AS total_after_discount',
                 'SUM(total_before_discount) AS total_before_discount',
                 'SUM(total_cash_discount) AS total_cash_discount',
                 'SUM(total_change) AS total_change',
                 'SUM(tip) AS tip',
                 'SUM(tax) AS tax',
-                'SUM(service_fee) AS service_fee'
+                'SUM(service_fee) AS service_fee',
             ])
             ->andWhere(['customer_id' => null])
-            ->andWhere(['between', 'created_at', $startTime, $endTime])
-            ->andWhere(['IN', 'order_status', self::queryOrderStatusReport()])
+            ->andWhere(['IN', 'order_status', self::getOrderStatuses()])
             ->groupBy(['order_status']);
-        $sort = new Sort([
-            'attributes' => [$request['sort'] ?? 'payment_method_type']
-        ]);
-        $orders = $query->orderBy($sort->orders)->asArray()->all();
-        if ($orders) {
-            $title = self::titleViewOrderStatusReport();
-            foreach ($orders as $key => $order) {
-                $orders[$key]['status'] = $title[$order['order_status']];
-            }
-        }
-        return $orders;
     }
 }
