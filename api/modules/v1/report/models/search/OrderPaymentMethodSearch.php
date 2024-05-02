@@ -6,9 +6,21 @@ use api\modules\v1\report\models\OrderPaymentMethod;
 use yii\data\ActiveDataProvider;
 use yii\data\Sort;
 
-class OrderPaymentMethodSearch
+class OrderPaymentMethodSearch extends OrderPaymentMethod
 {
-    public static function search($request = null): ActiveDataProvider
+    public $startTime;
+    public $endTime;
+
+    public function rules(): array
+    {
+        return [
+            [['startTime', 'endTime'], 'date', 'format' => 'php:Y-m-d'],
+            ['startTime', 'default', 'value' => date('Y-m-d', strtotime('-1 month'))],
+            ['endTime', 'default', 'value' => date('Y-m-d')],
+        ];
+    }
+
+    public function search($request = null): ActiveDataProvider
     {
         $dataProvider = new ActiveDataProvider([
             'query' => OrderPaymentMethod::report()->asArray(),
@@ -18,22 +30,16 @@ class OrderPaymentMethodSearch
             'key' => 'payment_method_type'
         ]);
 
-        $today = date('Y-m-d');
-        $startTime = $request['startTime'] ?? date('Y-m-d', strtotime('-1 month', strtotime($today)));
-        $endTime = $request['endTime'] ?? $today;
-        $dataProvider->query->andFilterWhere(['between', 'created_at', $startTime, $endTime]);
+        if (!$this->load($request, '') && !$this->validate()) {
+            return $dataProvider;
+        }
+
+        $dataProvider->query->andFilterWhere(['between', 'created_at', $this->startTime, $this->endTime]);
 
         $sort = new Sort([
             'attributes' => [$request['sort'] ?? 'payment_method_type'],
         ]);
         $dataProvider->query->orderBy($sort->orders);
-        $paymentMethodTypeTitles = OrderPaymentMethod::getPaymentMethodTypeTitles();
-
-        $dataProvider->setModels(array_map(function ($model) use ($paymentMethodTypeTitles) {
-            $model['payment_method'] = $paymentMethodTypeTitles[$model['payment_method_type']];
-            return $model;
-        }, $dataProvider->getModels()));
-
         return $dataProvider;
     }
 }

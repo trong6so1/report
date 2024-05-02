@@ -11,7 +11,7 @@ class StaffIncomeController extends Controller
 {
     public function actionIndex(): array
     {
-        $data = StaffIncomeSearch::search(Yii::$app->request->queryParams);
+        $data = (new StaffIncomeSearch())->search(Yii::$app->request->queryParams);
         $statusCode = ApiConstant::SC_OK;
         $data = [
             'data' => $data,

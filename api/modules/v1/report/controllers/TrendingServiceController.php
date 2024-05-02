@@ -11,7 +11,7 @@ class TrendingServiceController extends Controller
 {
     public function actionIndex(): array
     {
-        $data = OrderItemSearch::search(Yii::$app->request->queryParams);
+        $data = (new OrderItemSearch())->search(Yii::$app->request->queryParams);
         $statusCode = ApiConstant::SC_OK;
         $data = [
             'data' => $data,

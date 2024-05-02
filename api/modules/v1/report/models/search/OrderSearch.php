@@ -6,9 +6,21 @@ use api\modules\v1\report\models\Order;
 use yii\data\ActiveDataProvider;
 use yii\data\Sort;
 
-class OrderSearch
+class OrderSearch extends Order
 {
-    public static function search($request = null): ActiveDataProvider
+    public $startTime;
+    public $endTime;
+
+    public function rules(): array
+    {
+        return [
+            [['startTime', 'endTime'], 'date', 'format' => 'php:Y-m-d'],
+            ['startTime', 'default', 'value' => date('Y-m-d', strtotime('-1 month'))],
+            ['endTime', 'default', 'value' => date('Y-m-d')],
+        ];
+    }
+
+    public function search($request = null): ActiveDataProvider
     {
         $dataProvider = new ActiveDataProvider([
             'query' => Order::report()->asArray(),
@@ -18,21 +30,16 @@ class OrderSearch
             'key' => 'order_status',
         ]);
 
-        $today = date('Y-m-d');
-        $startTime = $request['startTime'] ?? date('Y-m-d', strtotime('-1 month', strtotime($today)));
-        $endTime = $request['endTime'] ?? $today;
-        $dataProvider->query->andFilterWhere(['between', 'created_at', $startTime, $endTime]);
+        if (!$this->load($request, '') || !$this->validate()) {
+            return $dataProvider;
+        }
+
+        $dataProvider->query->andFilterWhere(['between', 'created_at', $this->startTime, $this->endTime]);
 
         $sort = new Sort([
             'attributes' => [$request['sort'] ?? 'order_status']
         ]);
         $dataProvider->query->orderBy($sort->orders);
-        $orderStatusTitles = Order::getOrderStatusTitles();
-
-        $dataProvider->setModels(array_map(function ($model) use ($orderStatusTitles) {
-            $model['status'] = $orderStatusTitles[$model['order_status']];
-            return $model;
-        }, $dataProvider->getModels()));
         return $dataProvider;
     }
 }

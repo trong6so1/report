@@ -11,7 +11,7 @@ class OrderController extends Controller
 {
     public function actionIndex(): array
     {
-        $report = OrderSearch::search(Yii::$app->request->queryParams);
+        $report = (new OrderSearch())->search(Yii::$app->request->queryParams);
         $statusCode = ApiConstant::STATUS_OK;
         $data = $report;
         $error = null;

@@ -11,7 +11,7 @@ class IncomeController extends Controller
 {
     public function actionIndex(): array
     {
-        $report = OrderPaymentMethodSearch::search(Yii::$app->request->queryParams);
+        $report = (new OrderPaymentMethodSearch())->search(Yii::$app->request->queryParams);
         $statusCode = ApiConstant::STATUS_OK;
         $data = $report;
         $error = null;
