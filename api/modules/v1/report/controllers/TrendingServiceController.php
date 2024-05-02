@@ -4,13 +4,14 @@ namespace api\modules\v1\report\controllers;
 
 use api\helper\response\ApiConstant;
 use api\helper\response\ResultHelper;
-use api\modules\v1\report\models\OrderItem;
+use api\modules\v1\report\models\search\searchOrderItem;
+use Yii;
 
 class TrendingServiceController extends Controller
 {
     public function actionIndex(): array
     {
-        $data = OrderItem::report(\Yii::$app->request->queryParams);
+        $data = searchOrderItem::search(Yii::$app->request->queryParams);
         $statusCode = ApiConstant::SC_OK;
         $data = [
             'data' => $data,
