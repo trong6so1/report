@@ -7,6 +7,8 @@ use yii\db\ActiveQuery;
 class OrderPaymentMethod extends \common\models\OrderPaymentMethod
 {
 
+    public $quantity;
+
     public static function getPaymentMethodTypeTitles(): array
     {
         return [
@@ -29,6 +31,17 @@ class OrderPaymentMethod extends \common\models\OrderPaymentMethod
             \common\models\OrderPaymentMethod::TYPE_ACH,
             \common\models\OrderPaymentMethod::TYPE_EXTERNAL_CC
         ];
+    }
+
+    public function fields(): array
+    {
+        $fields = [
+            'payment_method_title' => function ($model) {
+                return self::getPaymentMethodTypeTitles()[$model->payment_method_type];
+            },
+            'quantity'
+        ];
+        return array_merge(parent::fields(), $fields);
     }
 
     public static function report(): ActiveQuery

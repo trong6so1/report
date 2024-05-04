@@ -23,7 +23,7 @@ class OrderPaymentMethodSearch extends OrderPaymentMethod
     public function search($request = null): ActiveDataProvider
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => OrderPaymentMethod::report()->asArray(),
+            'query' => OrderPaymentMethod::report(),
             'pagination' => [
                 'pageSize' => $request['perPage'] ?? 10,
             ],
