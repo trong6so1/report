@@ -23,7 +23,7 @@ class OrderSearch extends Order
     public function search($request = null): ActiveDataProvider
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Order::report()->asArray(),
+            'query' => Order::report(),
             'pagination' => [
                 'pageSize' => $request['perPage'] ?? 10,
             ],
@@ -35,11 +35,11 @@ class OrderSearch extends Order
         }
 
         $dataProvider->query->andFilterWhere(['between', 'created_at', $this->startTime, $this->endTime]);
-
         $sort = new Sort([
             'attributes' => [$request['sort'] ?? 'order_status']
         ]);
         $dataProvider->query->orderBy($sort->orders);
+        
         return $dataProvider;
     }
 }

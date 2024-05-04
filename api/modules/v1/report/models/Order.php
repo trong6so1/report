@@ -5,8 +5,13 @@ namespace api\modules\v1\report\models;
 use common\models\Order as OrderAlias;
 use yii\db\ActiveQuery;
 
+/**
+ *
+ * @property-read void $status
+ */
 class Order extends OrderAlias
 {
+    public $quantity;
 
     public static function getOrderStatusTitles(): array
     {
@@ -38,6 +43,17 @@ class Order extends OrderAlias
             OrderAlias::POS_STATUS_SETTLEMENT_FAIL,
             OrderAlias::POS_STATUS_MERGED,
         ];
+    }
+
+    public function fields(): array
+    {
+        $fields = [
+            'order_status_title' => function ($model) {
+                return self::getOrderStatusTitles()[$model->order_status];
+            },
+            'quantity'
+        ];
+        return array_merge(parent::fields(), $fields);
     }
 
     public static function report(): ActiveQuery
