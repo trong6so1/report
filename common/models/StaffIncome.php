@@ -15,4 +15,9 @@ class StaffIncome extends BaseStaffIncome
     {
         return $this->hasOne(Employee::Class, ['user_id' => 'staff_id']);
     }
+
+    public function fields(): array
+    {
+        return array_merge(parent::fields(), ['staff']);
+    }
 }

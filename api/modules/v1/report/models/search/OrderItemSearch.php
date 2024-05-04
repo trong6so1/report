@@ -10,7 +10,6 @@ class OrderItemSearch extends OrderItem
 {
     public $startTime;
     public $endTime;
-
     public function rules(): array
     {
         return [
@@ -23,7 +22,7 @@ class OrderItemSearch extends OrderItem
     public function search($request = null): ActiveDataProvider
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => OrderItem::report()->asArray(),
+            'query' => OrderItem::report(),
             'pagination' => [
                 'pageSize' => $request['perPage'] ?? 10,
             ],

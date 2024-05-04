@@ -23,7 +23,7 @@ class StaffIncomeSearch extends StaffIncome
     public function search($request = null): ActiveDataProvider
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => StaffIncome::report()->asArray(),
+            'query' => StaffIncome::report(),
             'pagination' => [
                 'pageSize' => $request['perPage'] ?? 10,
             ],

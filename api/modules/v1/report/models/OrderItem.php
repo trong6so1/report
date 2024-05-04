@@ -6,6 +6,14 @@ use yii\db\ActiveQuery;
 
 class OrderItem extends \common\models\OrderItem
 {
+    public $quantity_order;
+
+    public function fields(): array
+    {
+        $fields = ['quantity_order'];
+        return array_merge(parent::fields(), $fields);
+    }
+
     public static function report(): ActiveQuery
     {
 
