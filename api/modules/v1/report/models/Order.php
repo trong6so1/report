@@ -8,10 +8,12 @@ use yii\db\ActiveQuery;
 /**
  *
  * @property-read void $status
+ * @property mixed|null $order_status
  */
 class Order extends OrderAlias
 {
     public $quantity;
+    public $order_status_title;
 
     public static function getOrderStatusTitles(): array
     {
@@ -48,9 +50,7 @@ class Order extends OrderAlias
     public function fields(): array
     {
         $fields = [
-            'order_status_title' => function ($model) {
-                return self::getOrderStatusTitles()[$model->order_status];
-            },
+            'order_status_title',
             'quantity'
         ];
         return array_merge(parent::fields(), $fields);
@@ -73,5 +73,11 @@ class Order extends OrderAlias
             ->andWhere(['customer_id' => null])
             ->andWhere(['IN', 'order_status', self::getOrderStatuses()])
             ->groupBy(['order_status']);
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->order_status_title = self::getOrderStatusTitles()[$this->order_status];
     }
 }
