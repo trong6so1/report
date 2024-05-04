@@ -4,10 +4,14 @@ namespace api\modules\v1\report\models;
 
 use yii\db\ActiveQuery;
 
+/**
+ * @property mixed|null $payment_method_type
+ */
 class OrderPaymentMethod extends \common\models\OrderPaymentMethod
 {
 
     public $quantity;
+    public $payment_method_title;
 
     public static function getPaymentMethodTypeTitles(): array
     {
@@ -36,9 +40,7 @@ class OrderPaymentMethod extends \common\models\OrderPaymentMethod
     public function fields(): array
     {
         $fields = [
-            'payment_method_title' => function ($model) {
-                return self::getPaymentMethodTypeTitles()[$model->payment_method_type];
-            },
+            'payment_method_title',
             'quantity'
         ];
         return array_merge(parent::fields(), $fields);
@@ -55,5 +57,11 @@ class OrderPaymentMethod extends \common\models\OrderPaymentMethod
             ->andWhere(['status' => 1])
             ->andwhere(['IN', 'payment_method_type', self::getPaymentMethodTypes()])
             ->groupBy(['payment_method_type']);
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->payment_method_title = self::getPaymentMethodTypeTitles()[$this->payment_method_type];
     }
 }
