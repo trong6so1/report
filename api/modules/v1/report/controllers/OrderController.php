@@ -5,9 +5,8 @@ namespace api\modules\v1\report\controllers;
 use api\helper\response\ApiConstant;
 use api\helper\response\ResultHelper;
 use api\modules\v1\report\models\search\OrderSearch;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yii;
+use yii\base\InvalidConfigException;
 
 class OrderController extends Controller
 {
@@ -21,50 +20,54 @@ class OrderController extends Controller
         return ResultHelper::build($statusCode, $data, $error, $message);
     }
 
-    public function actionExport()
+    /**
+     * @throws InvalidConfigException
+     */
+    public function actionExport(): array
     {
-        $request = Yii::$app->request->queryParams;
-        $request['perPage'] = false;
-        $dataProvider = (new OrderSearch())->search($request);
-
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        $headers = [
-            'Order Status' => 'order_status',
-            'Order Status Title' => 'order_status_title',
-            'Quantity' => 'quantity',
-            'Tip' => 'tip',
-            'Tax' => 'tax',
-            'Total Before Discount' => 'total_before_discount',
-            'Total After Discount' => 'total_after_discount',
-            'Total Change' => 'total_change',
-            'Total Cash Discount' => 'total_cash_discount',
-            'Service Fee' => 'service_fee',
+        $attributes = [
+            'order_status',
+            'order_status_title',
+            'quantity',
+            'tip',
+            'tax',
+            'service_fee',
+            'total_before_discount',
+            'total_after_discount',
+            'total_change',
+            'total_cash_discount',
         ];
-        $sheet->fromArray(array_keys($headers), null, 'A1');
-
-        $row = 2;
-        foreach ($dataProvider->getModels() as $value) {
-            $rowData = [];
-            foreach ($headers as $field) {
-                $rowData[] = $value->$field;
-            }
-            $sheet->fromArray($rowData, null, 'A' . $row);
-            $row++;
+        $file = Yii::createObject([
+            'class' => 'codemix\excelexport\ExcelFile',
+            'writerClass' => '\PhpOffice\PhpSpreadsheet\Writer\Xls',
+            'sheets' => [
+                'Report Order' => [
+                    'class' => 'codemix\excelexport\ActiveExcelSheet',
+                    'query' => (new OrderSearch())->search()->query,
+                    'attributes' => $attributes
+                ],
+            ],
+        ]);
+        $fileName = 'export_report_order_' . date('YmdHis') . '.xlsx';
+        $fileDir = Yii::getAlias('@app/export/');
+        if (!is_dir($fileDir)) {
+            mkdir($fileDir, 0777, true);
         }
-
-        $filename = 'report_order_' . date('YmdHis') . '.xlsx';
-        $writer = new Xlsx($spreadsheet);
-
-        $tempDir = Yii::getAlias('@web/exports/');
-        if (!is_dir($tempDir)) {
-            mkdir($tempDir, 0777, true);
+        $filePath = $fileDir . $fileName;
+        if ($file->saveAs($filePath)) {
+            $statusCode = ApiConstant::SC_OK;
+            $data = [
+                'filePath' => $filePath,
+                'fileName' => $fileName,
+            ];
+            $error = null;
+            $message = 'Export report order successfully';
+        } else {
+            $statusCode = ApiConstant::SC_BAD_REQUEST;
+            $data = null;
+            $error = 'There was an error during the export process';
+            $message = 'Export report order failed';
         }
-        $filePath = $tempDir . $filename;
-        $writer->save($filePath);
-
-        Yii::$app->response->sendFile($filePath)->send();
-        unset($filePath);
+        return ResultHelper::build($statusCode, $data, $error, $message);
     }
 }
