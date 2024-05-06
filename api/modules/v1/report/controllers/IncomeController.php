@@ -5,10 +5,9 @@ namespace api\modules\v1\report\controllers;
 use api\helper\response\ApiConstant;
 use api\helper\response\ResultHelper;
 use api\modules\v1\report\models\search\OrderPaymentMethodSearch;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Exception;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Yii;
+use yii\base\InvalidConfigException;
 
 class IncomeController extends Controller
 {
@@ -24,46 +23,47 @@ class IncomeController extends Controller
 
     /**
      * @throws Exception
+     * @throws InvalidConfigException
      */
-    public function actionExport()
+    public function actionExport(): array
     {
-        $request = Yii::$app->request->queryParams;
-        $request['perPage'] = false;
-        $dataProvider = (new OrderPaymentMethodSearch())->search($request);
-
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        $headers = [
-            'Payment Method Type' => 'payment_method_type',
-            'Payment Method Title' => 'payment_method_title',
-            'Quantity' => 'quantity',
-            'Total Paid' => 'total_paid',
-        ];
-        $sheet->fromArray(array_keys($headers), null, 'A1');
-
-        $row = 2;
-        foreach ($dataProvider->getModels() as $value) {
-            $rowData = [];
-            foreach ($headers as $field) {
-                $rowData[] = $value->$field;
-            }
-            $sheet->fromArray($rowData, null, 'A' . $row);
-            $row++;
+        $file = Yii::createObject([
+            'class' => 'codemix\excelexport\ExcelFile',
+            'writerClass' => '\PhpOffice\PhpSpreadsheet\Writer\Xls',
+            'sheets' => [
+                'Report Order' => [
+                    'class' => 'codemix\excelexport\ActiveExcelSheet',
+                    'query' => (new OrderPaymentMethodSearch())->search()->query,
+                    'attributes' => [
+                        'payment_method_type',
+                        'payment_method_title',
+                        'quantity',
+                        'total_paid'
+                    ],
+                ],
+            ],
+        ]);
+        $fileName = 'export_report_income_' . date('YmdHis') . '.xlsx';
+        $fileDir = Yii::getAlias('@app/export/');
+        if (!is_dir($fileDir)) {
+            mkdir($fileDir, 0777, true);
         }
-
-        $filename = 'report_order_' . date('YmdHis') . '.xlsx';
-        $writer = new Xlsx($spreadsheet);
-
-        $tempDir = Yii::getAlias('@web/exports/');
-        if (!is_dir($tempDir)) {
-            mkdir($tempDir, 0777, true);
+        $filePath = $fileDir . $fileName;
+        if ($file->saveAs($filePath)) {
+            $statusCode = ApiConstant::SC_OK;
+            $data = [
+                'filePath' => $filePath,
+                'fileName' => $fileName,
+            ];
+            $error = null;
+            $message = 'Export report income successfully';
+        } else {
+            $statusCode = ApiConstant::SC_BAD_REQUEST;
+            $data = null;
+            $error = 'There was an error during the export process';
+            $message = 'Export report income failed';
         }
-        $filePath = $tempDir . $filename;
-        $writer->save($filePath);
-
-        Yii::$app->response->sendFile($filePath)->send();
-        unset($filePath);
+        return ResultHelper::build($statusCode, $data, $error, $message);
     }
 
 }
