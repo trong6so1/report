@@ -31,6 +31,8 @@ class StaffIncomeSearch extends StaffIncome
         ]);
 
         if (!$this->load($request, '') && !$this->validate()) {
+            $dataProvider->query->andFilterWhere(['between', 'created_at',
+                date('Y-m-d', strtotime('-1 month')), date('Y-m-d')]);
             return $dataProvider;
         }
 
