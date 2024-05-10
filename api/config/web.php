@@ -22,6 +22,7 @@ $config = [
         ],
         'request' => [
             'enableCookieValidation' => false,
+            'enableCsrfValidation' => true,
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
             ],
@@ -30,14 +31,18 @@ $config = [
             'class' => 'yii\i18n\Formatter',
             'timeZone' => 'Asia/Ho_Chi_Minh',
         ],
-
-        'queue' => [
-            'class' => \yii\queue\db\Queue::class,
-            'db' => 'db',
-            'tableName' => '{{%queue}}',
-            'channel' => 'default',
-            'mutex' => \yii\mutex\MysqlMutex::class,
+        'redis' => [
+            'class' => \yii\redis\Connection::class,
+            'hostname' => 'localhost',
+            'port' => 8081,
+            'retries' => 1,
         ],
+        'queue' => [
+            'class' => \yii\queue\redis\Queue::class,
+            'redis' => 'redis', // Redis connection component or its config
+            'channel' => 'queue', // Queue channel key
+        ],
+
         'log' => [
             'targets' => [
                 [

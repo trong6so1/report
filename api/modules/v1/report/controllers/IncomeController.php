@@ -31,12 +31,11 @@ class IncomeController extends Controller
             'class' => 'codemix\excelexport\ExcelFile',
             'writerClass' => '\PhpOffice\PhpSpreadsheet\Writer\Xls',
             'sheets' => [
-                'Report Order' => [
+                'Report Income' => [
                     'class' => 'codemix\excelexport\ActiveExcelSheet',
                     'query' => (new OrderPaymentMethodSearch())->search()->query,
                     'attributes' => [
                         'payment_method_type',
-                        'payment_method_title',
                         'quantity',
                         'total_paid'
                     ],
@@ -60,7 +59,7 @@ class IncomeController extends Controller
         } else {
             $statusCode = ApiConstant::SC_BAD_REQUEST;
             $data = null;
-            $error = 'There was an error during the export process';
+            $error = 'There was an error during the search process';
             $message = 'Export report income failed';
         }
         return ResultHelper::build($statusCode, $data, $error, $message);

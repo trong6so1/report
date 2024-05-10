@@ -74,7 +74,7 @@ class StaffIncomeController extends Controller
         } else {
             $statusCode = ApiConstant::SC_BAD_REQUEST;
             $data = null;
-            $error = 'There was an error during the export process';
+            $error = 'There was an error during the search process';
             $message = 'Export report staff income failed';
         }
         return ResultHelper::build($statusCode, $data, $error, $message);

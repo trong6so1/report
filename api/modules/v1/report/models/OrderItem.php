@@ -10,13 +10,15 @@ class OrderItem extends \common\models\OrderItem
 
     public function fields(): array
     {
-        $fields = ['quantity_order'];
-        return array_merge(parent::fields(), $fields);
+        return [
+            "item_id",
+            "quantity_order",
+            "service"
+        ];
     }
 
     public static function report(): ActiveQuery
     {
-
         return parent::find()
             ->select([
                 'item_id',

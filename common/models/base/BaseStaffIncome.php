@@ -4,7 +4,7 @@ namespace common\models\base;
 
 use yii\db\ActiveRecord;
 
-class baseStaffIncome extends ActiveRecord
+class BaseStaffIncome extends ActiveRecord
 {
     public static function tableName(): string
     {

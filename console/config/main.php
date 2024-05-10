@@ -9,11 +9,11 @@ $params = array_merge(
 return [
     'id' => 'app-console',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log','queue'],
+    'bootstrap' => ['log', 'queue'],
     'controllerNamespace' => 'console\controllers',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'controllerMap' => [
         'fixture' => [
@@ -22,9 +22,8 @@ return [
         ],
         'migrate' => [
             'class' => 'yii\console\controllers\MigrateController',
-            'migrationPath' => null,
+            'migrationPath' => '@vendor/yiisoft/yii2-queue/src/db/migrations',
             'migrationNamespaces' => [
-                // ...
                 'yii\queue\db\migrations',
             ],
         ],
@@ -40,13 +39,17 @@ return [
                 ],
             ],
         ],
+        'redis' => [
+            'class' => \yii\redis\Connection::class,
+            'hostname' => 'redis.service.nitro',
+            'port' => 6379, // Redis server port (default is 6379)
+            'database' => 0,
+            'retries' => 1,
+        ],
         'queue' => [
-            'class' => \yii\queue\db\Queue::class,
-            'db' => 'db',
-            'tableName' => '{{%queue}}',
-            'channel' => 'default',
-            'mutex' => \yii\mutex\MysqlMutex::class,
-            'as log' => \yii\queue\LogBehavior::class,
+            'class' => \yii\queue\redis\Queue::class,
+            'redis' => 'redis', // Redis connection component or its config
+            'channel' => 'queue', // Queue channel key
         ],
     ],
     'params' => $params,

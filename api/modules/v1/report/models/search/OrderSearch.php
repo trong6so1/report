@@ -3,7 +3,6 @@
 namespace api\modules\v1\report\models\search;
 
 use api\modules\v1\report\models\Order;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 use yii\data\ActiveDataProvider;
 use yii\data\Sort;
 
@@ -30,7 +29,6 @@ class OrderSearch extends Order
             ],
             'key' => 'order_status',
         ]);
-
         if (!$this->load($request, '') || !$this->validate()) {
             $dataProvider->query->andFilterWhere(['between', 'created_at',
                 date('Y-m-d', strtotime('-1 month')), date('Y-m-d')]);
@@ -41,7 +39,6 @@ class OrderSearch extends Order
             'attributes' => [$request['sort'] ?? 'order_status']
         ]);
         $dataProvider->query->orderBy($sort->orders);
-
         return $dataProvider;
     }
 }

@@ -4,6 +4,14 @@ return [
     'enablePrettyUrl' => true,
     'showScriptName' => false,
     'rules' => [
-        'class' => 'yii\rest\UrlRule',
-    ]
+        [
+            'class' => 'yii\rest\UrlRule',
+            'controller' => ['v1/order' => 'v1/order/order'],
+            'extraPatterns' => [
+                'POST create' => 'create',
+                'GET search' => 'search',
+            ],
+        ],
+    ],
 ];
+

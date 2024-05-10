@@ -12,6 +12,8 @@ use yii\db\ActiveQuery;
 class OrderItem extends BaseOrderItem
 {
     const TYPE_SERVICE = 1;
+    const TYPE_PRODUCT = 2;
+    const TYPE_GIFT_CARD = 4;
     const STATUS_ACTIVE = 1;
 
     public function getService(): ActiveQuery
@@ -19,8 +21,12 @@ class OrderItem extends BaseOrderItem
         return $this->hasOne(Service::Class, ['id' => 'item_id']);
     }
 
-    public function fields(): array
+    public static function getItemTypes(): array
     {
-        return array_merge(parent::fields(), ['service']);
+        return [
+            self::TYPE_SERVICE,
+            self::TYPE_PRODUCT,
+            self::TYPE_GIFT_CARD,
+        ];
     }
 }

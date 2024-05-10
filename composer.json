@@ -27,7 +27,11 @@
     "vlucas/phpdotenv": "^4.1@dev",
     "yii2tech/ar-softdelete": "*",
     "yiisoft/yii2-httpclient": "^2.0@dev",
-    "predis/predis": "^3.0@alpha"
+    "predis/predis": "^3.0@alpha",
+    "codemix/yii2-excelexport": "dev-master",
+    "phpoffice/phpspreadsheet": "^1.29",
+    "yii2tech/spreadsheet": "^1.0@dev",
+    "yiisoft/yii2-redis": "^2.0@dev"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.1.0",

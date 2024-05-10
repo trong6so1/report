@@ -18,6 +18,21 @@ class Module extends \yii\base\Module
             'report' => [
                 'class' => report\Module::class,
             ],
+            'order' => [
+                'class' => order\Module::class,
+            ],
+            'category' => [
+                'class' => category\Module::class,
+            ],
+            'customer' => [
+                'class' => customer\Module::class,
+            ],
+            'service' => [
+                'class' => service\Module::class,
+            ],
+            'product' => [
+                'class' => product\Module::class,
+            ]
         ];
     }
 

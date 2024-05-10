@@ -5,6 +5,7 @@ namespace api\modules\v1\report\controllers;
 use api\helper\response\ApiConstant;
 use api\helper\response\ResultHelper;
 use api\modules\v1\report\models\search\OrderSearch;
+use common\jobs\ExportReportOrderJob;
 use Yii;
 use yii\base\InvalidConfigException;
 
@@ -27,7 +28,6 @@ class OrderController extends Controller
     {
         $attributes = [
             'order_status',
-            'order_status_title',
             'quantity',
             'tip',
             'tax',
@@ -43,8 +43,8 @@ class OrderController extends Controller
             'sheets' => [
                 'Report Order' => [
                     'class' => 'codemix\excelexport\ActiveExcelSheet',
-                    'query' => (new OrderSearch())->search()->query,
-                    'attributes' => $attributes
+                    'query' => (new OrderSearch())->search(Yii::$app->request->queryParams)->query,
+                    'attributes' => $attributes,
                 ],
             ],
         ]);
@@ -65,7 +65,7 @@ class OrderController extends Controller
         } else {
             $statusCode = ApiConstant::SC_BAD_REQUEST;
             $data = null;
-            $error = 'There was an error during the export process';
+            $error = 'There was an error during the search process';
             $message = 'Export report order failed';
         }
         return ResultHelper::build($statusCode, $data, $error, $message);
